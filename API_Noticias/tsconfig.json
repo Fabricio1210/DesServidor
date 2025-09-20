@@ -1,0 +1,11 @@
+{
+    "compilerOptions":{
+        "target": "es5",
+        "rootDir": "source",
+        "outDir": "dist",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "strict": true,
+        "esModuleInterop": true
+    }
+}

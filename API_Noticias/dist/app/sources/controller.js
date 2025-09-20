@@ -1,0 +1,27 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getSources = getSources;
+var axios_1 = __importDefault(require("axios"));
+function getSources(req, res) {
+    var url = "https://newsapi.org/v2/top-headlines/sources?";
+    var country = req.query.country, category = req.query.category, language = req.query.language;
+    if (country) {
+        url += "country=".concat(country, "&");
+    }
+    if (category) {
+        url += "category=".concat(category, "&");
+    }
+    if (language) {
+        url += "sources=".concat(language, "&");
+    }
+    url += "apiKey=".concat(process.env.API_KEY);
+    axios_1.default.get(url)
+        .then(function (response) {
+        res.send(response.data);
+    }).catch(function (error) {
+        res.status(500).send("Error: " + error.message);
+    });
+}

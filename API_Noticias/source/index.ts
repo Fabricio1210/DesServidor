@@ -1,0 +1,14 @@
+import express from "express";
+import routes from './app/routes';
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const app = express();
+const port = 3000;
+
+app.use(routes)
+
+app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`);
+});
