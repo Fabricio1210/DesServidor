@@ -1,0 +1,77 @@
+<div class="room-list">
+    <ul>
+        {{#each rooms}}
+        <li>
+            <a href="#" onclick="joinRoom('{{this}}')" class="room-link">
+                {{this}}
+            </a>
+        </li>
+        {{/each}}
+    </ul>
+</div>
+
+<script>
+    function joinRoom(roomName) {
+        const username = sessionStorage.getItem("Username"); 
+
+        if (username) {
+            window.location.href = `/chat/${roomName}?username=${encodeURIComponent(username)}`;
+        } else {
+            alert('Nombre de usuario no encontrado. Vuelva a ingresar.');
+            window.location.href = '/'; 
+        }
+    }
+    
+    if (!sessionStorage.getItem("Username")) {
+        window.location.href = '/';
+    }
+    
+    document.getElementById('btn-logout').addEventListener('click', () => {
+        sessionStorage.removeItem("Username");
+        window.location.href = '/'; 
+    });
+</script>
+
+<style>
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    font-family: sans-serif;
+}
+.room-list {
+    margin: 20px 0;
+}
+.room-list ul {
+    list-style: none;
+    padding: 0;
+}
+.room-list li {
+    margin: 10px 0;
+}
+.room-link {
+    display: block;
+    padding: 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    transition: background-color 0.3s;
+}
+.room-link:hover {
+    background-color: #0056b3;
+}
+.btn-logout {
+    display: inline-block;
+    margin-top: 20px;
+    color: #dc3545;
+    text-decoration: none;
+}
+.btn-logout:hover {
+    text-decoration: underline;
+}
+</style>

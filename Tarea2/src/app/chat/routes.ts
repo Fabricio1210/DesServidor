@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { renderChat } from "./controller";
+import * as chatController from "./controller";
 
-const router = Router()
+const router = Router();
+router.get('/:roomName', chatController.getChat);
 
-router.get('', renderChat);
-
-export default router
+export default router;

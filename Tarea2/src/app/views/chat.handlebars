@@ -1,44 +1,133 @@
-<h2>ChatGPI</h2>
+<div class="chat-container">
+    <div class="header">
+        <h2>Sala: **{{roomName}}**</h2>
+        <p>Conectado como: **{{username}}**</p>
+    </div>
 
+    <div class="messages-area">
+        <ul id="messages">
+            </ul>
+    </div>
 
-<div id="mensajesContainer">
+    <form id="chat-form" class="message-form">
+        <input id="message-input" type="text" placeholder="Escribe tu mensaje..." required autocomplete="off">
+        <button type="submit">Enviar</button>
+    </form>
 
+    <hr>
+
+    <div class="controls">
+        <button id="btn-leave-room" class="btn-secondary">
+            Salir de Sala (Elegir otra)
+        </button>
+
+        <a id="btn-logout" href="/logout" class="btn-danger">
+            Cerrar Sesión
+        </a>
+    </div>
 </div>
 
-<button id="boton">Click me!</button>
-<button id="enviarMensajeBoton">Enviar Mensaje</button>
-
-<input id="entradaMensaje" type="text">
-
+<style>
+    .message-mine {
+        text-align: right; 
+        background-color: #d1e7dd;
+        padding: 5px;
+        margin: 5px 0;
+        border-radius: 5px;
+    }
+    .message-other {
+        text-align: left; 
+        background-color: #f8d7da; 
+        padding: 5px;
+        margin: 5px 0;
+        border-radius: 5px;
+    }
+    .system-message {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+    }
+    #messages {
+        list-style: none;
+        padding: 0;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>
+<script src="/socket.io/socket.io.js"></script>
 <script>
-    console.log("cargo la pagina de chat")
-    const socket= io('/')
+    const socket = io();
 
-    socket.on("confirmacion", () => {
-        console.log("Excelente!")
-    })
+    // Variables inyectadas por Handlebars desde el servidor
+    const USERNAME = '{{username}}'; // CLAVE
+    const ROOM_NAME = '{{roomName}}'; // CLAVE
 
-    document.getElementById('boton').addEventListener('click', () => {
-        socket.emit('buttonClick', {
-            dato: 'test'
-        })
-    })  
-    const inputMensaje = document.querySelector('#entradaMensaje')
+    const messagesList = document.getElementById('messages');
+    const messageForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
 
-    document.getElementById('enviarMensajeBoton').addEventListener('click', () => {
-        const mensaje = inputMensaje.value;
-        socket.emit('messageSent', {
-            dato: mensaje
-        })
-        console.log("Mensaje:", mensaje)
-    })
+    // 1. Conexión y Unión a la Sala
+    socket.on('connect', () => {
+        // Al conectar, notificamos al servidor que el usuario quiere unirse a la sala
+        socket.emit('joinRoom', { 
+            username: USERNAME, 
+            room: ROOM_NAME 
+        });
+    });
 
-    const contenedor = document.getElementById("mensajesContainer")
+    // 2. Manejo del Envío de Mensajes
+    messageForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const message = messageInput.value.trim();
 
-    socket.on('messageReceived', (mensajes) => {
-        const newP = document.createElement('p')
-        newP.innerHTML = <span>${mensajes.dato}</span>
-        contenedor.append(newP)
-    })
+        if (message) {
+            // Envía el mensaje al servidor (el servidor adjunta el username y timestamp)
+            socket.emit('chatMessage', message); 
+            messageInput.value = '';
+        }
+    });
 
+    // 3. Renderización de Mensajes (Mío vs. Otros)
+    socket.on('messageReceived', (data) => {
+        const item = document.createElement('li');
+        const isMine = data.username === USERNAME; // CLAVE: Distinción
+
+        item.classList.add(isMine ? 'message-mine' : 'message-other'); 
+
+        const time = new Date(data.timestamp).toLocaleTimeString();
+
+        // El contenido del mensaje incluye: Nombre, Mensaje y Fecha-Hora
+        const content = `
+            <span class="user-name">${isMine ? 'Tú' : data.username}:</span> 
+            <span class="text">${data.message}</span>
+            <span class="time">${time}</span>
+        `;
+        item.innerHTML = content;
+        messagesList.appendChild(item);
+        messagesList.scrollTop = messagesList.scrollHeight; // Scroll automático
+    });
+
+    // 4. Notificaciones del Sistema (Ingreso/Salida)
+    socket.on('systemMessage', (data) => {
+        const item = document.createElement('li');
+        item.classList.add('system-message');
+        item.textContent = data.message;
+        messagesList.appendChild(item);
+        messagesList.scrollTop = messagesList.scrollHeight;
+    });
+
+    // 5. Botones de Control
+    document.getElementById('btn-leave-room').addEventListener('click', () => {
+        // Notifica al servidor para limpiar la sala en el socket
+        socket.emit('leaveRoom');
+        // Redirige a la selección de salas
+        window.location.href = '/salas';
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', (e) => {
+        // Es un <a> con href="/logout", pero agregamos la acción de socket
+        // antes de que el navegador navegue
+        socket.emit('leaveRoom');
+        // La navegación a /logout destruirá la sesión en el servidor
+    });
 </script>

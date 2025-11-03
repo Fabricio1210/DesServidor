@@ -1,6 +1,19 @@
-<h1> Hola {{nombre}} </h1>
-<ul>
-    {{#each usuarios}}
-    <li>{{this.nombre}}</li>
-    {{/each}}
-</ul>
+<h1> Hola </h1>
+<p>Ponga su nombre</p>
+<input id="name" type="text" required>
+<button onclick="savedName()" >Enviar</button>
+<p></p>
+
+<script>
+    function savedName(){
+        const inputName = document.getElementById("name");
+        const name = inputName.value;
+
+        if (name.trim() === "") {
+            alert("Por favor, introduce tu nombre.");
+            return;
+        }
+        sessionStorage.setItem("Username", name); 
+        window.location.href = `/salas?username=${encodeURIComponent(name)}`; 
+    }
+</script>
