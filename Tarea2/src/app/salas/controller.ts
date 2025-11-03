@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-const AVAILABLE_ROOMS: string[] = ['General', 'Desarrollo Web', 'Consultas'];
+const AVAILABLE_ROOMS: string[] = ['General', 'Videojuegos', 'Memes'];
 
 export function renderSalas(req: Request, res: Response) {
     const username = req.query.username as string;

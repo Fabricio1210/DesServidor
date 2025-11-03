@@ -20,24 +20,21 @@
         <button id="btn-leave-room" class="btn-secondary">
             Salir de Sala (Elegir otra)
         </button>
-
-        <a id="btn-logout" href="/logout" class="btn-danger">
-            Cerrar Sesión
-        </a>
     </div>
 </div>
 
 <style>
+
     .message-mine {
         text-align: right; 
-        background-color: #d1e7dd;
+        background-color: #d1e7dd; 
         padding: 5px;
         margin: 5px 0;
         border-radius: 5px;
     }
     .message-other {
         text-align: left; 
-        background-color: #f8d7da; 
+        background-color: #f8d7da;
         padding: 5px;
         margin: 5px 0;
         border-radius: 5px;
@@ -53,61 +50,60 @@
         max-height: 400px;
         overflow-y: auto;
     }
+    /* Estilos generales del contenedor */
+    .chat-container {
+        max-width: 800px;
+        margin: 20px auto;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 </style>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
-
-    // Variables inyectadas por Handlebars desde el servidor
-    const USERNAME = '{{username}}'; // CLAVE
-    const ROOM_NAME = '{{roomName}}'; // CLAVE
+    const USERNAME = '{{username}}';
+    const ROOM_NAME = '{{roomName}}';
 
     const messagesList = document.getElementById('messages');
     const messageForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message-input');
-
-    // 1. Conexión y Unión a la Sala
     socket.on('connect', () => {
-        // Al conectar, notificamos al servidor que el usuario quiere unirse a la sala
         socket.emit('joinRoom', { 
             username: USERNAME, 
             room: ROOM_NAME 
         });
     });
 
-    // 2. Manejo del Envío de Mensajes
     messageForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const message = messageInput.value.trim();
 
         if (message) {
-            // Envía el mensaje al servidor (el servidor adjunta el username y timestamp)
             socket.emit('chatMessage', message); 
             messageInput.value = '';
         }
     });
 
-    // 3. Renderización de Mensajes (Mío vs. Otros)
     socket.on('messageReceived', (data) => {
         const item = document.createElement('li');
-        const isMine = data.username === USERNAME; // CLAVE: Distinción
+        const isMine = data.username === USERNAME; 
 
         item.classList.add(isMine ? 'message-mine' : 'message-other'); 
 
         const time = new Date(data.timestamp).toLocaleTimeString();
-
-        // El contenido del mensaje incluye: Nombre, Mensaje y Fecha-Hora
         const content = `
-            <span class="user-name">${isMine ? 'Tú' : data.username}:</span> 
+            <span class="user-name"><b>${isMine ? 'Tú' : data.username}</b>:</span> 
             <span class="text">${data.message}</span>
             <span class="time">${time}</span>
         `;
         item.innerHTML = content;
         messagesList.appendChild(item);
-        messagesList.scrollTop = messagesList.scrollHeight; // Scroll automático
+        messagesList.scrollTop = messagesList.scrollHeight;
     });
 
-    // 4. Notificaciones del Sistema (Ingreso/Salida)
     socket.on('systemMessage', (data) => {
         const item = document.createElement('li');
         item.classList.add('system-message');
@@ -116,18 +112,13 @@
         messagesList.scrollTop = messagesList.scrollHeight;
     });
 
-    // 5. Botones de Control
     document.getElementById('btn-leave-room').addEventListener('click', () => {
-        // Notifica al servidor para limpiar la sala en el socket
         socket.emit('leaveRoom');
-        // Redirige a la selección de salas
-        window.location.href = '/salas';
+        window.location.href = `/salas?username=${encodeURIComponent(USERNAME)}`; 
     });
 
     document.getElementById('btn-logout').addEventListener('click', (e) => {
-        // Es un <a> con href="/logout", pero agregamos la acción de socket
-        // antes de que el navegador navegue
         socket.emit('leaveRoom');
-        // La navegación a /logout destruirá la sesión en el servidor
+        sessionStorage.removeItem("Username"); 
     });
 </script>

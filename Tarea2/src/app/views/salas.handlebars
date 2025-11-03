@@ -1,13 +1,25 @@
-<div class="room-list">
-    <ul>
-        {{#each rooms}}
-        <li>
-            <a href="#" onclick="joinRoom('{{this}}')" class="room-link">
-                {{this}}
-            </a>
-        </li>
-        {{/each}}
-    </ul>
+<div class="container">
+    <h2>👋 Hola, **{{username}}**. Elige una sala de chat:</h2>
+
+    <p>Haz clic en una sala para unirte y comenzar a chatear.</p>
+
+    <div class="room-list">
+        <ul>
+            {{#each rooms}}
+            <li>
+                <a href="#" onclick="joinRoom('{{this}}')" class="room-link">
+                    {{this}}
+                </a>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+    
+    <hr>
+    
+    <a href="#" id="btn-logout" class="btn-logout">
+        Cerrar Sesión (Eliminar Nombre)
+    </a>
 </div>
 
 <script>
@@ -21,14 +33,14 @@
             window.location.href = '/'; 
         }
     }
-    
+
     if (!sessionStorage.getItem("Username")) {
         window.location.href = '/';
     }
     
     document.getElementById('btn-logout').addEventListener('click', () => {
         sessionStorage.removeItem("Username");
-        window.location.href = '/'; 
+        window.location.href = '/';
     });
 </script>
 
