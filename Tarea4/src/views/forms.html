@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta a Santa</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container { 
+            max-width: 500px; 
+            width: 100%;
+            background: #ffffff; 
+            padding: 30px; 
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #E53935;
+        }
+        
+        h1 { 
+            color: #333333; 
+            text-align: center; 
+            margin-bottom: 30px; 
+            font-size: 24px;
+        }
+        
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="email"], textarea { 
+            width: 100%; 
+            padding: 12px;
+            margin-bottom: 20px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            transition: border-color 0.3s;
+        }
+        
+        input[type="email"]:focus, textarea:focus {
+            border-color: #E53935; 
+            outline: none;
+        }
+
+        textarea { 
+            resize: vertical; 
+            min-height: 150px; 
+        }
+
+        button { 
+            background-color: #E53935;
+            color: white; 
+            padding: 12px 15px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            width: 100%; 
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover { 
+            background-color: #C62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Escribe tu Carta a Santa</h1>
+
+        <form id="santaForm" action="/send-santa-letter" method="POST">
+            
+            <label for="santaEmail">Correo de Santa :</label>
+            <input 
+                type="email" 
+                id="santaEmail" 
+                name="santaEmail" 
+                required
+            >
+
+            <label for="letterContent">Carta:</label>
+            <textarea 
+                id="letterContent" 
+                name="letterContent" 
+                placeholder="Querido Santa, para esta Navidad deseo..."
+                required
+            ></textarea>
+            
+            <button type="submit">Enviar Carta a Santa</button>
+        </form>
+    </div>
+</body>
+</html>
